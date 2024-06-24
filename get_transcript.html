@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>Chess Game</h1>
+  <button onclick="getTranscript()">Get Video Transcript</button>
+
+  <script>
+    async function getTranscript() {
+      const videoId = '1tqJZOzZX58'; // Replace with your video ID
+      try {
+        const response = await fetch(`/api/youtube/transcript?videoId=${videoId}`);
+        const data = await response.json();
+        console.log(data);
+        
+        // Display the transcript data on the page
+        const transcriptDiv = document.createElement('div');
+        let transcriptText = '<h2>Transcript:</h2>';
+        data.transcript.forEach(entry => {
+          transcriptText += `<p>${entry.text}</p>`;
+        });
+        transcriptDiv.innerHTML = transcriptText;
+        document.body.appendChild(transcriptDiv);
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to fetch transcript. Check the console for details.');
+      }
+    }
+  </script>
+</body>
+</html>

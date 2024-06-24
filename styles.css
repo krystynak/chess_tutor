@@ -1,0 +1,25 @@
+#myBoard {
+    width: 400px; /* Adjust this value to make the board smaller */
+    margin: auto;
+}
+
+.info {
+    width: 400px; /* Match this with the board width */
+    margin: 20px auto;
+}
+
+input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Add responsive design for smaller screens */
+@media (max-width: 480px) {
+    #myBoard {
+        width: 90vw; /* 90% of viewport width on small screens */
+    }
+    .info {
+        width: 90vw;
+    }
+}
+
