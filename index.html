@@ -10,6 +10,8 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
+
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
 </head>
 <body>
     <div class="container">
@@ -22,6 +24,9 @@
             <div class="controls">
                 <button id="startBtn">Start Position</button>
                 <button id="clearBtn">Clear Board</button>
+                <label>
+                    <input type="checkbox" id="devModeToggle" onchange="console.log('Checkbox changed:', this.checked)"> Development Mode
+                </label>
             </div>
             <div class="fen-input">
                 <input type="text" id="fenInput" placeholder="Enter FEN notation">
@@ -32,7 +37,12 @@
                 <button type="submit">Generate Quiz from Video</button>
             </form>
             <div id="error-message" style="display: none; color: red;"></div>
-            <div id="quiz-container"></div>
+            <div id="quiz-container">
+                <p id="question"></p>
+                <input type="text" id="answer">
+                <button id="submit-answer">Submit Answer</button>
+                <p id="result"></p>
+            </div>
         </div>
     </div>
 
@@ -47,5 +57,6 @@
     
     <!-- Custom JavaScript -->
     <script src="script.js"></script>
+    <script src="quiz.mjs" type="module"></script>
 </body>
 </html>

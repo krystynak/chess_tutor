@@ -1,6 +1,18 @@
 let board = null;
 let game = new Chess();
 
+function initializeBoard() {
+    const config = {
+        draggable: true,
+        position: 'start',
+        onDragStart: onDragStart,
+        onDrop: onDrop,
+        onSnapEnd: onSnapEnd,
+        pieceTheme: 'img/chesspieces/{piece}.png'
+    };
+    board = Chessboard('myBoard', config);
+}
+
 function onDragStart(source, piece, position, orientation) {
     if (game.game_over()) return false;
     if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
@@ -45,40 +57,33 @@ function updateStatus() {
     $('#status').html(status);
 }
 
-let config = {
-    draggable: true,
-    position: 'start',
-    onDragStart: onDragStart,
-    onDrop: onDrop,
-    onSnapEnd: onSnapEnd,
-    pieceTheme: 'img/chesspieces/{piece}.png'
-};
 
-board = Chessboard('myBoard', config);
-
-updateStatus();
-
-$('#startBtn').on('click', function() {
-    board.start();
-    game.reset();
+$(document).ready(function() {
+    initializeBoard();
     updateStatus();
-});
 
-$('#clearBtn').on('click', function() {
-    board.clear();
-    game.clear();
-    updateStatus();
-});
-
-$('#setPositionBtn').on('click', function() {
-    let fen = $('#fenInput').val();
-    if (game.validate_fen(fen).valid) {
-        board.position(fen);
-        game.load(fen);
+    $('#startBtn').on('click', function() {
+        board.start();
+        game.reset();
         updateStatus();
-    } else {
-        alert('Invalid FEN');
-    }
+    });
+
+    $('#clearBtn').on('click', function() {
+        board.clear();
+        game.clear();
+        updateStatus();
+    });
+
+    $('#setPositionBtn').on('click', function() {
+        let fen = $('#fenInput').val();
+        if (game.validate_fen(fen).valid) {
+            board.position(fen);
+            game.load(fen);
+            updateStatus();
+        } else {
+            alert('Invalid FEN notation');
+        }
+    });
 });
 
 
@@ -199,4 +204,4 @@ function showLoading(isLoading) {
     console.log(isLoading ? 'Loading...' : 'Loading complete');
 }
 
-// ... (keep your existing chess game logic)
+

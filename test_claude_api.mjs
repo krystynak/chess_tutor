@@ -4,6 +4,8 @@ import fetch from 'node-fetch';
 
 dotenv.config();
 
+// video URL: https://www.youtube.com/watch?v=1tqJZOzZX58
+
 const youtube = google.youtube({
   version: 'v3',
   auth: process.env.YOUTUBE_API_KEY
