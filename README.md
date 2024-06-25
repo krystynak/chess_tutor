@@ -49,9 +49,8 @@ This file provides a service layer for interacting with the Anthropic Claude API
 
 1. Clone the repository
 2. Install dependencies with `npm install`
-3. Set up environment variables (API keys, etc.)
-4. Run the server with `node app.mjs`
-5. Access the application in your web browser at `http://localhost:3000`
+3. Set up environment variables (API keys in .env)
+4. Run npm start (uses start_servers.mjs to run app.mjs and proxy_server.mjs)
 
 ## Usage
 
