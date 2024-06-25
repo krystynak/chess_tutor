@@ -14,7 +14,6 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.0",
     "axios": "^1.7.2",
-    "chatgpt": "^5.0.0",
     "concurrently": "^8.2.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -22,8 +21,7 @@
     "http-proxy": "^1.18.1",
     "node-fetch": "^3.3.2",
     "nodemon": "^3.1.4",
-    "youtube-transcript": "^1.2.1",
-    "youtube-transcript-api": "^1.1.2"
+    "youtube-transcript": "^1.2.1"
   },
   "description": ""
 }
