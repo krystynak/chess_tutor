@@ -66,6 +66,10 @@ This file provides a service layer for interacting with the Anthropic Claude API
 - Chess.js (for chess logic)
 - Chessboard.js (for chess board visualization)
 
+## TODO
+- Main issues is that FEN and quiz questions don't always match
+- Quiz answers aren't checked.  Need to use a LLM API call to check if users answer is close enough
+
 ## License
 
 This project is licensed under the MIT License.
