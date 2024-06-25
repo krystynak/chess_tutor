@@ -20,6 +20,8 @@ const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(cors());
+// Serve static files from the 'img' directory
+app.use('/img', express.static(path.join(__dirname, 'img')));
 app.use(express.json( {limit: '2mb'}));
 app.use(express.urlencoded({ limit: '2mb', extended: true }));
 
@@ -150,7 +152,9 @@ app.post('/api/process-transcript', async (req, res) => {
     3. The correct answer
     
     Please ensure the questions cover key chess concepts of positions in the transcript and vary in difficulty.
-    Format your response as a JSON array of objects, each with keys: fen, question, answer
+    Format your response as a JSON array of objects, each with keys: fen, question, answer.
+    Your response should be valid JSON enclosed in \`\`\`json ... \`\`\` markers.
+
     `;
 
     console.log('Sending request to Anthropic API: ', prompt);
@@ -163,13 +167,23 @@ app.post('/api/process-transcript', async (req, res) => {
     console.log('Received response from Anthropic API');
     console.log('Raw API response:', message.content[0].text);
 
-    // Parse the JSON response
+    // Extract and parse the JSON from the response
     let parsedResult;
     try {
-      parsedResult = JSON.parse(message.content[0].text);
+      const jsonMatch = message.content[0].text.match(/```json\n([\s\S]*?)\n```/);
+      if (jsonMatch && jsonMatch[1]) {
+        parsedResult = JSON.parse(jsonMatch[1]);
+      } else {
+        throw new Error('No JSON found in the response');
+      }
     } catch (parseError) {
       console.error('Error parsing Anthropic API response:', parseError);
-      return res.status(500).json({ error: 'Failed to parse API response' });
+      // Create a fallback response
+      parsedResult = [{
+        fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        question: "Our apologies, we couldn't generate a proper quiz. This is the starting position in chess. What is White's most popular opening move?",
+        answer: "The most popular opening move for White is 1.e4, moving the king's pawn forward two squares."
+      }];
     }
 
     console.log('Successfully processed transcript and created quiz');

@@ -2,6 +2,7 @@ import { startQuiz } from './quiz.mjs';
 console.log('script.mjs loaded');
 // Chess-related code
 let board = null;
+let isWhiteOnBottom = true;  // track orientation
 let game = new Chess();
 
 function initializeBoard() {
@@ -12,9 +13,18 @@ function initializeBoard() {
         onDragStart: onDragStart,
         onDrop: onDrop,
         onSnapEnd: onSnapEnd,
+        orientation: 'white',
         pieceTheme: 'img/chesspieces/{piece}.png'
     };
     board = Chessboard('myBoard', config);
+}
+
+// Add this function to invert the board
+function invertBoard() {
+    if (board) {
+        isWhiteOnBottom = !isWhiteOnBottom;
+        board.orientation(isWhiteOnBottom ? 'white' : 'black');
+    }
 }
 
 function onDragStart(source, piece, position, orientation) {
@@ -69,20 +79,17 @@ function extractVideoId(url) {
     return (match && match[2].length === 11) ? match[2] : null;
 }
 
-function displayError(message) {
-    const errorElement = document.getElementById('error-message');
-    errorElement.textContent = message;
-    errorElement.style.display = 'block';
+
+// Modify your updateBoardPosition function to maintain orientation
+export function updateBoardPosition(fen) {
+    if (board) {
+        board.position(fen);
+        board.orientation(isWhiteOnBottom ? 'white' : 'black');
+    } else {
+        console.error('Board is not initialized in script.mjs');
+    }
 }
 
-function hideError() {
-    document.getElementById('error-message').style.display = 'none';
-}
-
-function showLoading(isLoading) {
-    // Implement this function to show/hide a loading indicator
-    console.log(isLoading ? 'Loading...' : 'Loading complete');
-}
 
 // Set up event listeners when the DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
@@ -112,6 +119,11 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Invalid FEN notation');
         }
     });
+
+    const invertButton = document.getElementById('invertBoard');
+    if (invertButton) {
+        invertButton.addEventListener('click', invertBoard);
+    }
 
     const form = document.getElementById('video-form');
   

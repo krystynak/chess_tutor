@@ -1,4 +1,5 @@
 import { getTranscript, processTranscript} from './claude_service.mjs';
+import { updateBoardPosition } from './script.mjs';
 
 let currentQuestionIndex = 0;
 let quizData = [];
@@ -11,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const devModeToggle = document.getElementById('devModeToggle');
     const videoUrlInput = document.getElementById('video-url');
     const submitQuizButton = document.getElementById('submit-quiz');
+    const submitAnswerButton = document.getElementById('submit-answer');
 
     if (!devModeToggle) {
         console.error('Dev mode toggle element not found');
@@ -40,6 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
         submitQuizButton.addEventListener('click', checkAnswers);
     }
 
+    if (!submitAnswerButton) {
+        console.error('Submit answer button not found');
+    } else {
+        submitAnswerButton.addEventListener('click', submitAnswer);
+    }
+
     console.log('Initial Development mode:', isDevelopmentMode);
 
     if (isDevelopmentMode && videoUrlInput) {
@@ -49,25 +57,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Function to check answers when user submits the quiz
-function checkAnswers() {
-    const quizContainer = document.getElementById('quiz-container');
-    const questions = quizContainer.querySelectorAll('.question');
-    let score = 0;
 
-    questions.forEach((questionDiv, index) => {
-        const selectedOption = questionDiv.querySelector('input:checked');
-        if (selectedOption) {
-            const userAnswer = parseInt(selectedOption.value);
-            if (userAnswer === questions[index].correctAnswer) {
-                score++;
-                questionDiv.style.color = 'green';
-            } else {
-                questionDiv.style.color = 'red';
-            }
+function checkAnswers() {
+    let score = 0;
+    quizData.forEach((question, index) => {
+        const userAnswer = document.getElementById(`answer-${index}`).value;
+        if (userAnswer.toLowerCase() === question.answer.toLowerCase()) {
+            score++;
         }
     });
-
-    alert(`You scored ${score} out of ${questions.length}`);
+    alert(`You scored ${score} out of ${quizData.length}`);
 }
 
 
@@ -89,7 +88,9 @@ export async function startQuiz(videoId) {
         }
         
         quizData = await processTranscript(transcript);
+        currentQuestionIndex = 0;
         showQuestion();
+        showQuizContainer();
     } catch (error) {
         console.error('Error starting quiz:', error);
         document.getElementById('error-message').textContent = 'Error fetching transcript or processing quiz. Please try again.';
@@ -98,9 +99,39 @@ export async function startQuiz(videoId) {
 }
 
 function showQuestion() {
+    if (currentQuestionIndex >= quizData.length) {
+        endQuiz();
+        return;
+    }
+
     const question = quizData[currentQuestionIndex];
-    board = Chessboard('myBoard', { position: question.fen, draggable: true });
+
+    // Update the board position for the current question
+    updateBoardPosition(question.fen);
+
     document.getElementById('question').textContent = question.question;
+    document.getElementById('answer').value = '';
+}
+
+function showQuizContainer() {
+    document.getElementById('quiz-container').style.display = 'block';
+}
+
+function submitAnswer() {
+    const userAnswer = document.getElementById('answer').value;
+    const correctAnswer = quizData[currentQuestionIndex].answer;
+    
+    // Here you can implement logic to check the answer and keep score
+    // For now, we'll just move to the next question
+    
+    currentQuestionIndex++;
+    showQuestion();
+}
+
+function endQuiz() {
+    document.getElementById('quiz-container').style.display = 'none';
+    alert('Quiz complete!');
+    // Here you can add logic to display the final score
 }
 
 
@@ -110,9 +141,3 @@ document.getElementById('devModeToggle').addEventListener('change', (e) => {
 
 // Add event listener for quiz submission
 document.getElementById('submit-quiz').addEventListener('click', checkAnswers);
-
-function extractVideoId(url) {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
-}

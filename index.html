@@ -16,8 +16,19 @@
 <body>
     <div class="container">
         <h1>Chess Game</h1>
-        
-        <div id="myBoard"></div>
+
+
+        <div id="board-container">
+            <div id="myBoard" style="width: 400px"></div>
+            <button id="invertBoard">Invert Board</button>
+        </div>
+
+
+        <div id="quiz-container" style="display: none;">
+            <p id="question"></p>
+            <input type="text" id="answer" placeholder="Your answer">
+            <button id="submit-answer">Submit Answer</button>
+        </div>
         
         <div class="info">
             <div id="status"></div>
@@ -39,7 +50,6 @@
             </form>
               
             <div id="error-message" style="display: none; color: red;"></div>
-            <div id="quiz-container"></div>
             <button id="submit-quiz" style="display: none;">Submit Quiz</button>
         </div>
     </div>
