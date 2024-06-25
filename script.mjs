@@ -5,6 +5,7 @@ let board = null;
 let game = new Chess();
 
 function initializeBoard() {
+    console.log('initializeBoard called');
     const config = {
         draggable: true,
         position: 'start',
@@ -40,6 +41,7 @@ function onSnapEnd() {
 }
 
 function updateStatus() {
+    console.log('updateStatus called');
     let status = '';
     let moveColor = 'White';
     if (game.turn() === 'b') {
@@ -60,31 +62,6 @@ function updateStatus() {
     $('#status').html(status);
 }
 
-// Quiz generation code
-async function generateQuizFromVideo(event) {
-    event.preventDefault();
-    
-    const videoUrl = document.getElementById('video-url').value;
-    const videoId = extractVideoId(videoUrl);
-
-    if (!videoId) {
-        displayError('Invalid YouTube URL. Please enter a valid URL.');
-        return;
-    }
-
-    showLoading(true);
-    hideError();
-
-    try {
-        await startQuiz(videoId);
-        document.getElementById('quiz-container').style.display = 'block';
-    } catch (error) {
-        console.error('Error generating quiz:', error);
-        displayError('Failed to generate quiz. Please try again.');
-    } finally {
-        showLoading(false);
-    }
-}
 
 function extractVideoId(url) {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -109,6 +86,7 @@ function showLoading(isLoading) {
 
 // Set up event listeners when the DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded'); 
     initializeBoard();
     updateStatus();
 
@@ -135,5 +113,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    document.getElementById('video-form').addEventListener('submit', generateQuizFromVideo);
+    const form = document.getElementById('video-form');
+  
+    if (form) {
+      console.log('Form found');
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        console.log('Form submitted');
+        const videoUrl = document.getElementById('video-url').value;
+        const videoId = extractVideoId(videoUrl);
+        if (videoId) {
+          startQuiz(videoId);
+        } else {
+          alert('Invalid YouTube URL');
+        }
+      });
+    } else {
+      console.error('Form not found');
+    }
+
+
 });

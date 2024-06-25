@@ -10,7 +10,6 @@ console.log('quiz.mjs loaded');
 document.addEventListener('DOMContentLoaded', () => {
     const devModeToggle = document.getElementById('devModeToggle');
     const videoUrlInput = document.getElementById('video-url');
-    const videoForm = document.getElementById('video-form');
     const submitQuizButton = document.getElementById('submit-quiz');
 
     if (!devModeToggle) {
@@ -33,21 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!videoUrlInput) {
         console.error('Video URL input element not found');
-    }
-
-    if (!videoForm) {
-        console.error('Video form element not found');
-    } else {
-        videoForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const videoUrl = videoUrlInput.value;
-            const videoId = extractVideoId(videoUrl);
-            if (videoId) {
-                await startQuiz(videoId);
-            } else {
-                alert('Invalid YouTube URL');
-            }
-        });
     }
 
     if (!submitQuizButton) {
@@ -88,8 +72,8 @@ function checkAnswers() {
 
 
 export async function startQuiz(videoId) {
-    console.log('startQuiz called with videoId:', videoId);
-    console.log('isDevelopmentMode:', isDevelopmentMode);
+    console.log(`startQuiz called from quiz.mjs with videoId: ${videoId}`);
+    console.trace(); // This will print a stack trace
 
     try {
         console.log('Fetching transcript from API in startQuiz');
@@ -118,19 +102,6 @@ function showQuestion() {
     board = Chessboard('myBoard', { position: question.fen, draggable: true });
     document.getElementById('question').textContent = question.question;
 }
-
-
-document.getElementById('video-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const videoUrl = document.getElementById('video-url').value;
-    const videoId = extractVideoId(videoUrl);
-    if (videoId) {
-        await startQuiz(videoId);
-    } else {
-        document.getElementById('error-message').textContent = 'Invalid YouTube URL';
-        document.getElementById('error-message').style.display = 'block';
-    }
-});
 
 
 document.getElementById('devModeToggle').addEventListener('change', (e) => {

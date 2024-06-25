@@ -14,7 +14,8 @@ export async function getTranscript(videoId, isDevelopmentMode) {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      return await response.json();
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.error('Error fetching local transcript:', error);
       throw error;
@@ -35,7 +36,7 @@ export async function getTranscript(videoId, isDevelopmentMode) {
 export async function processTranscript(transcript) {
     console.log('Processing transcript');
     try {
-      const response = await fetch('http://localhost:3000/api/process-transcript', {
+      const response = await fetch('http://localhost:5500/api/process-transcript', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

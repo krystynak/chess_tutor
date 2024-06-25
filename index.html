@@ -32,11 +32,12 @@
                 <input type="text" id="fenInput" placeholder="Enter FEN notation">
                 <button id="setPositionBtn">Set Position</button>
             </div>
-            <form id="video-form" class="video-input">
-                <input type="text" id="video-url" placeholder="Enter YouTube video URL" required value="https://www.youtube.com/watch?v=1tqJZOzZX58">
-                <button type="submit">Generate Quiz</button>
+
+            <form id="video-form">
+                <input type="text" id="video-url" placeholder="Enter YouTube URL" required>
+                <button type="submit" id="generate-quiz-btn">Generate Quiz</button>
             </form>
-            
+              
             <div id="error-message" style="display: none; color: red;"></div>
             <div id="quiz-container"></div>
             <button id="submit-quiz" style="display: none;">Submit Quiz</button>
