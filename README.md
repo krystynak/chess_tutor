@@ -67,10 +67,6 @@ This file provides a service layer for interacting with the Anthropic Claude API
 - Chess.js (for chess logic)
 - Chessboard.js (for chess board visualization)
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
 ## License
 
 This project is licensed under the MIT License.
