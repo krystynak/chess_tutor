@@ -25,7 +25,7 @@
                 <button id="startBtn">Start Position</button>
                 <button id="clearBtn">Clear Board</button>
                 <label>
-                    <input type="checkbox" id="devModeToggle" onchange="console.log('Checkbox changed:', this.checked)"> Development Mode
+                    <input type="checkbox" id="devModeToggle" checked onchange="console.log('Checkbox changed:', this.checked)"> Development Mode
                 </label>
             </div>
             <div class="fen-input">
@@ -33,16 +33,13 @@
                 <button id="setPositionBtn">Set Position</button>
             </div>
             <form id="video-form" class="video-input">
-                <input type="text" id="video-url" placeholder="Enter YouTube video URL" required>
-                <button type="submit">Generate Quiz from Video</button>
+                <input type="text" id="video-url" placeholder="Enter YouTube video URL" required value="https://www.youtube.com/watch?v=1tqJZOzZX58">
+                <button type="submit">Generate Quiz</button>
             </form>
+            
             <div id="error-message" style="display: none; color: red;"></div>
-            <div id="quiz-container">
-                <p id="question"></p>
-                <input type="text" id="answer">
-                <button id="submit-answer">Submit Answer</button>
-                <p id="result"></p>
-            </div>
+            <div id="quiz-container"></div>
+            <button id="submit-quiz" style="display: none;">Submit Quiz</button>
         </div>
     </div>
 
@@ -56,7 +53,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     
     <!-- Custom JavaScript -->
-    <script src="script.js"></script>
-    <script src="quiz.mjs" type="module"></script>
+    <script src="script.mjs" type="module" ></script>
 </body>
 </html>

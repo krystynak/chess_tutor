@@ -1,45 +1,53 @@
-import { ChatGPTAPI } from 'chatgpt';
+export async function getTranscript(videoId, isDevelopmentMode) {
+    console.log('getTranscript called with videoId:', videoId);
+    if (isDevelopmentMode) {
+      return await getLocalTranscript(videoId);
+    } else {
+      return await getYoutubeTranscript(videoId);
+    }
+  }
 
-const api = new ChatGPTAPI({
-  apiKey: process.env.CLAUDE_API_KEY
-});
+  async function getLocalTranscript(videoId) {
+    console.log('Fetching local transcript');
+    try {
+      const response = await fetch(`http://localhost:5500/api/local-transcript?videoId=${videoId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching local transcript:', error);
+      throw error;
+    }
+  }
+  
+  async function getYoutubeTranscript(videoId) {
+    console.log('Fetching YouTube transcript')
 
-export async function getTranscript(videoId) {
     const response = await fetch(`http://localhost:5500/api/youtube/transcript?videoId=${videoId}`);
     if (!response.ok) {
         throw new Error(`Failed to fetch transcript: ${response.status} ${response.statusText}`);
     }
     return await response.json();
-}
+  }
 
-export async function getLocalTranscript() {
-    try {
-        const data = await fs.readFile('caro_test_transcript.json', 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        console.error('Error reading local transcript file:', error);
-        throw new Error('Failed to read local transcript file');
-    }
-}
 
 export async function processTranscript(transcript) {
-    const prompt = `
-        Analyze this chess video transcript and create a quiz with 3 questions:
-        ${transcript}
-        
-        For each question, provide:
-        1. A chess position in FEN notation
-        2. A question about the position
-        3. The correct answer
-        
-        Format your response as a JSON array of objects, each with keys: fen, question, answer
-    `;
-
+    console.log('Processing transcript');
     try {
-        const response = await api.sendMessage(prompt);
-        return JSON.parse(response.text);
+      const response = await fetch('http://localhost:3000/api/process-transcript', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ transcript }),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
     } catch (error) {
-        console.error('Error processing transcript with Claude:', error);
-        throw new Error('Failed to process transcript with AI');
+      console.error('Error processing transcript:', error);
+      throw error;
     }
-}
+  }

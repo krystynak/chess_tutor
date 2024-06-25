@@ -1,12 +1,12 @@
 {
   "name": "chess",
   "version": "1.0.0",
-  "main": "script.js",
+  "main": "script.mjs",
   "type": "module",
   "scripts": {
-    "test": "node test-servers.mjs",
-    "start": "node start-servers.mjs",
-    "dev": "nodemon start-servers.mjs"
+    "test": "node test_servers.mjs",
+    "start": "node start_servers.mjs",
+    "dev": "nodemon start_servers.mjs"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +14,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.0",
     "axios": "^1.7.2",
+    "chatgpt": "^5.0.0",
     "concurrently": "^8.2.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

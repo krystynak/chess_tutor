@@ -28,7 +28,7 @@ const servers = [
   {
     name: 'Proxy Server',
     command: 'node',
-    args: ['proxy-server.mjs'],
+    args: ['proxy_server.mjs'],
     cwd: __dirname
   },
   {

@@ -1,48 +1,109 @@
-
-import { getTranscript, processTranscript, getLocalTranscript } from './claude_service.mjs';
+import { getTranscript, processTranscript} from './claude_service.mjs';
 
 let currentQuestionIndex = 0;
 let quizData = [];
+let isDevelopmentMode = true;
 
 console.log('quiz.mjs loaded');
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOMContentLoaded event fired');
     const devModeToggle = document.getElementById('devModeToggle');
-    devModeToggle.addEventListener('change', (e) => {
-        isDevelopmentMode = e.target.checked;
-        console.log('Development mode:', isDevelopmentMode);
-    });
+    const videoUrlInput = document.getElementById('video-url');
+    const videoForm = document.getElementById('video-form');
+    const submitQuizButton = document.getElementById('submit-quiz');
 
-    document.getElementById('video-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const videoUrl = document.getElementById('video-url').value;
-        const videoId = extractVideoId(videoUrl);
-        if (videoId) {
-            document.getElementById('error-message').style.display = 'none';
-            await startQuiz(videoId);
-        } else {
-            document.getElementById('error-message').textContent = 'Invalid YouTube URL';
-            document.getElementById('error-message').style.display = 'block';
-        }
-    });
+    if (!devModeToggle) {
+        console.error('Dev mode toggle element not found');
+    } else {
+        // Ensure the checkbox is checked
+        devModeToggle.checked = true;
+        
+        devModeToggle.addEventListener('change', (e) => {
+            isDevelopmentMode = e.target.checked;
+            console.log('Development mode changed to:', isDevelopmentMode);
+            
+            if (isDevelopmentMode) {
+                videoUrlInput.value = 'https://www.youtube.com/watch?v=1tqJZOzZX58';
+            } else {
+                videoUrlInput.value = '';
+            }
+        });
+    }
+
+    if (!videoUrlInput) {
+        console.error('Video URL input element not found');
+    }
+
+    if (!videoForm) {
+        console.error('Video form element not found');
+    } else {
+        videoForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const videoUrl = videoUrlInput.value;
+            const videoId = extractVideoId(videoUrl);
+            if (videoId) {
+                await startQuiz(videoId);
+            } else {
+                alert('Invalid YouTube URL');
+            }
+        });
+    }
+
+    if (!submitQuizButton) {
+        console.error('Submit quiz button not found');
+    } else {
+        submitQuizButton.addEventListener('click', checkAnswers);
+    }
+
+    console.log('Initial Development mode:', isDevelopmentMode);
+
+    if (isDevelopmentMode && videoUrlInput) {
+        videoUrlInput.value = 'https://www.youtube.com/watch?v=1tqJZOzZX58';
+    }
 });
 
 
-async function startQuiz(videoId) {
+// Function to check answers when user submits the quiz
+function checkAnswers() {
+    const quizContainer = document.getElementById('quiz-container');
+    const questions = quizContainer.querySelectorAll('.question');
+    let score = 0;
+
+    questions.forEach((questionDiv, index) => {
+        const selectedOption = questionDiv.querySelector('input:checked');
+        if (selectedOption) {
+            const userAnswer = parseInt(selectedOption.value);
+            if (userAnswer === questions[index].correctAnswer) {
+                score++;
+                questionDiv.style.color = 'green';
+            } else {
+                questionDiv.style.color = 'red';
+            }
+        }
+    });
+
+    alert(`You scored ${score} out of ${questions.length}`);
+}
+
+
+export async function startQuiz(videoId) {
     console.log('startQuiz called with videoId:', videoId);
     console.log('isDevelopmentMode:', isDevelopmentMode);
 
     try {
-        let transcript;
-        if (isDevelopmentMode) {
-            console.log('Using local transcript file');
-            transcript = await getLocalTranscript();
+        console.log('Fetching transcript from API in startQuiz');
+        const transcript = await getTranscript(videoId, isDevelopmentMode);
+
+        // Log a snippet of the transcript
+        console.log('Transcript snippet:');
+        if (transcript && transcript.length > 0) {
+            // Log the first 200 characters of the transcript
+            console.log(transcript.slice(0, 200) + '...');
         } else {
-            console.log('Fetching transcript from API');
-            transcript = await getTranscript(videoId);
+            console.log('Transcript is empty or undefined');
         }
+        
         quizData = await processTranscript(transcript);
         showQuestion();
     } catch (error) {
@@ -51,29 +112,13 @@ async function startQuiz(videoId) {
         document.getElementById('error-message').style.display = 'block';
     }
 }
+
 function showQuestion() {
     const question = quizData[currentQuestionIndex];
     board = Chessboard('myBoard', { position: question.fen, draggable: true });
     document.getElementById('question').textContent = question.question;
 }
 
-function checkAnswer() {
-    const userAnswer = document.getElementById('answer').value;
-    const correctAnswer = quizData[currentQuestionIndex].answer;
-    const resultElement = document.getElementById('result');
-    
-    if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
-        resultElement.textContent = "Correct!";
-        currentQuestionIndex++;
-        if (currentQuestionIndex < quizData.length) {
-            showQuestion();
-        } else {
-            resultElement.textContent = "Quiz completed!";
-        }
-    } else {
-        resultElement.textContent = "Incorrect. Try again.";
-    }
-}
 
 document.getElementById('video-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -87,18 +132,16 @@ document.getElementById('video-form').addEventListener('submit', async (e) => {
     }
 });
 
-let isDevelopmentMode = false;
 
 document.getElementById('devModeToggle').addEventListener('change', (e) => {
     isDevelopmentMode = e.target.checked;
 });
 
-document.getElementById('submit-answer').addEventListener('click', checkAnswer);
+// Add event listener for quiz submission
+document.getElementById('submit-quiz').addEventListener('click', checkAnswers);
 
 function extractVideoId(url) {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
     return (match && match[2].length === 11) ? match[2] : null;
 }
-
-export { startQuiz };
